@@ -93,9 +93,7 @@
             </button>
         </div>
 
-        <!-- Contenedor del QR -->
-        <div id="qr-code-container" class="mt-3"></div>
-
+      
         <!-- Pie de página con letra chica -->
         <footer class="footer mt-5">
             <p class="small text-muted">MALDITO CUPIDO® es una marca registrada. Promoción válida hasta agotar stock y exclusiva para la República Argentina, excepto Tierra del Fuego. Cada usuario puede girar la ruleta una vez por semana. Los códigos de descuento son personales, intransferibles y válidos por 10 días desde su obtención. No acumulables con otras promociones. Aplican solo a productos seleccionados y no incluyen costos de envío. MALDITO CUPIDO no se hace responsable por fallas técnicas o errores en la plataforma. Nos reservamos el derecho de modificar o cancelar la promoción en cualquier momento.</p>
@@ -156,18 +154,6 @@
                 return `PROMOMC-${randomChars()}${prefix}-${datePart}`;
             }
 
-            function generateQRCode(code) {
-                const qrURL = `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=${encodeURIComponent(code)}`;
-                console.log("Generando QR con URL: ", qrURL);  // Verificar la URL generada
-                
-                qrContainer.innerHTML = '';  // Limpiar el contenedor
-                const imgElement = document.createElement('img');
-                imgElement.src = qrURL;
-                imgElement.alt = 'QR Code';
-                imgElement.style.width = '150px';  // Definir el tamaño del QR
-                imgElement.style.height = '150px';
-                qrContainer.appendChild(imgElement);
-            }
 
             spinButton.addEventListener("click", function () {
                 let randomRotation =  Math.floor(Math.random() * 360);
@@ -194,7 +180,7 @@
                         // Muestra el botón de copiar y genera el QR
                         copyButton.classList.remove("d-none");
                         copyButton.setAttribute("data-code", promoCode);
-                        generateQRCode(promoCode);
+  
                     } else {
                         resultDiv.innerText = "Hubo un error. Intenta de nuevo.";
                     }
