@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta de Premios</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Permanent+Marker&family=Prosto+One&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet">
+        
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Prosto One', sans-serif;
+        }
+        h1 {
+            font-family: 'Prosto One', cursive;
+        }
+        footer {
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            padding: 5px 10px;
+        }
+        footer .small {
+            font-size: 0.7rem; /* Aún más pequeño */
+            color: #6c757d;
+            font-family: Verdana, Arial, sans-serif; /* Fuente clásica */
+            text-align: left; /* Alineación hacia la izquierda */
+            margin: 0;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            margin: 0 auto;
+        }
+        .wheel {
+            width: 100%;
+            border-radius: 50%;
+            transition: transform 3s ease-out;
+        }
+        .pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid rgb(242, 255, 0);
+            z-index: 2;
+            filter: drop-shadow(0px 0px 2px black);
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'Bungee', sans-serif;
+            text-transform: uppercase;  
+        }
+        /* Estilo para el código QR */
+        #qr-code-container img {
+            margin-top: 15px;
+            width: 150px;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h3 class="my-0">LA RUEDA DE</h3>
+        <img src="C:\Users\Gaby\Desktop\Python\MC_\Logo_MC.png" alt="logo" class="img-fluid mb-3" style="max-width: 400px;">
+        <div class="wheel-container position-relative">
+            <div class="pointer"></div>
+            <img id="wheel" class="wheel img-fluid" src="C:\Users\Gaby\Desktop\Python\MC_\prize_wheel.png" alt="Ruleta">
+        </div>
+
+        <button id="spin-button" class="btn btn-outline-warning mt-3">Girar</button>
+
+        <!-- Contenedor del código con botón de copiar -->
+        <div class="mt-3 d-flex justify-content-center align-items-center">
+            <p id="result" class="fw-bold mb-0 me-2"></p>
+            <button id="copy-button" class="btn btn-outline-primary btn-sm d-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Contenedor del QR -->
+        <div id="qr-code-container" class="mt-3"></div>
+
+        <!-- Pie de página con letra chica -->
+        <footer class="footer mt-5">
+            <p class="small text-muted">MALDITO CUPIDO® es una marca registrada. Promoción válida hasta agotar stock y exclusiva para la República Argentina, excepto Tierra del Fuego. Cada usuario puede girar la ruleta una vez por semana. Los códigos de descuento son personales, intransferibles y válidos por 10 días desde su obtención. No acumulables con otras promociones. Aplican solo a productos seleccionados y no incluyen costos de envío. MALDITO CUPIDO no se hace responsable por fallas técnicas o errores en la plataforma. Nos reservamos el derecho de modificar o cancelar la promoción en cualquier momento.</p>
+        </footer>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // VERSION SIN CAMBIOS DE PESO
+        document.addEventListener("DOMContentLoaded", function () {
+            const spinButton = document.getElementById("spin-button");
+            const resultDiv = document.getElementById("result");
+            const wheel = document.getElementById("wheel");
+            const copyButton = document.getElementById("copy-button");
+            const qrContainer = document.getElementById("qr-code-container");
+
+            const prizes = [
+                { min: 330, max: 30, prize: "20% Off", code: "20-VE" },
+                { min: 30, max: 90, prize: "Regalo especial", code: "RE-ES" },
+                { min: 90, max: 150, prize: "10% Off", code: "10-DI" },
+                { min: 150, max: 210, prize: "30% Off", code: "30-TR" },
+                { min: 210, max: 270, prize: "5% Off", code: "05-CI" },
+                { min: 270, max: 330, prize: "50% Off", code: "50-CI" }
+            ];
+
+            // function canSpin() {
+            //     let lastSpinDate = localStorage.getItem("lastSpinDate");
+            //     let today = new Date().toISOString().split("T")[0];
+            //     return lastSpinDate == today;
+            // }
+
+            // if (!canSpin()) {
+            //     spinButton.disabled = true;
+            //     resultDiv.innerText = "Ya giraste hoy. Vuelve mañana.";
+            // }
+
+            // function canSpin() {
+            //     let lastSpinDate = localStorage.getItem("lastSpinDate");
+            //     let today = new Date();
+            //     if (!lastSpinDate) {
+            //         return true;
+            //     }
+            //     let lastSpinDateObj = new Date(lastSpinDate);
+            //     let diffTime = today - lastSpinDateObj;
+            //     let diffDays = diffTime / (1000 * 60 * 60 * 24);
+            //     return diffDays >= 7;
+            // }
+
+            function canSpin() {
+                let lastSpinDate = localStorage.getItem("lastSpinDate");
+                let today = new Date();
+                if (!lastSpinDate) {
+                    return { canSpin: true };
+                }
+                let lastSpinDateObj = new Date(lastSpinDate);
+                let diffTime = today - lastSpinDateObj;
+                let diffDays = diffTime / (1000 * 60 * 60 * 24);
+                if (diffDays >= 7) {
+                    return { canSpin: true };
+                } else {
+                    return { canSpin: false, daysRemaining: Math.ceil(7 - diffDays) };
+                }
+            }
+
+            let spinResult = canSpin();
+
+            if (!spinResult.canSpin) {
+                spinButton.disabled = true;
+                resultDiv.innerText = `Ya giraste esta semana. Vuelve a intentarlo en ${spinResult.daysRemaining} día${spinResult.daysRemaining > 1 ? 's' : ''}.`;
+            } else {
+                localStorage.setItem("lastSpinDate", new Date().toISOString());
+            }
+
+            function generatePromoCode(prefix) {
+                const randomChars = () => Math.random().toString(36).substring(2, 4).toUpperCase();
+                const today = new Date();
+                const datePart = String(today.getDate()).padStart(2, '0') + String(today.getMonth() + 1).padStart(2, '0');
+                return `PROMOMC-${randomChars()}${prefix}-${datePart}`;
+            }
+
+            function generateQRCode(code) {
+                const qrURL = `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=${encodeURIComponent(code)}`;
+                console.log("Generando QR con URL: ", qrURL);  // Verificar la URL generada
+                
+                // Aseguramos que el contenedor esté vacío y agregar el QR correctamente
+                qrContainer.innerHTML = '';  // Limpiar el contenedor
+                const imgElement = document.createElement('img');
+                imgElement.src = qrURL;
+                imgElement.alt = 'QR Code';
+                imgElement.style.width = '150px';  // Definir el tamaño del QR
+                imgElement.style.height = '150px';
+                qrContainer.appendChild(imgElement);
+            }
+
+            spinButton.addEventListener("click", function () {
+                let randomRotation =  Math.floor(Math.random() * 360);
+                if (randomRotation >= 180 && randomRotation < 240) {
+                    let prueba = Math.random()
+                    if (prueba < 0.6) {
+                        randomRotation = Math.random() * 360
+                    }
+                }
+                let rotationFinal = 3600 + randomRotation
+                wheel.style.transform = `rotate(${rotationFinal}deg)`;
+                spinButton.disabled = true;
+
+                setTimeout(() => {
+                    let finalAngle = (randomRotation + 90) % 360;
+                    let winningPrize = prizes.find(p => {
+                        return p.min < p.max
+                            ? finalAngle >= p.min && finalAngle < p.max
+                            : finalAngle >= p.min || finalAngle < p.max;
+                    });
+                    if (winningPrize) {
+                        let promoCode = generatePromoCode(winningPrize.code);
+                        resultDiv.innerText = `¡Ganaste: ${winningPrize.prize}! \n Código: ${promoCode}`;
+                        // Muestra el botón de copiar y genera el QR
+                        copyButton.classList.remove("d-none");
+                        copyButton.setAttribute("data-code", promoCode);
+                        generateQRCode(promoCode);
+                    } else {
+                        resultDiv.innerText = "Hubo un error. Intenta de nuevo.";
+                    }
+                }, 3000);
+            });
+
+            copyButton.addEventListener("click", function () {
+                let promoCode = copyButton.getAttribute("data-code");
+                navigator.clipboard.writeText(promoCode).then(() => {
+                    copyButton.innerText = "Copiado!";
+                });
+            });
+        });
+
+
+
+    </script>
+</body>
+</html>
