@@ -177,14 +177,13 @@
                     if (winningPrize) {
                         if (winningPrize.prize == "Segui") {
                             resultDiv.innerHTML = 'En esta oportunidad no ganaste. <br> Podés ingresar a nuestra <a href="https://www.malditocupido.com.ar/" target="_blank">tienda online</a> y elegir tus prendas favoritas con un 10% off, si abonás con transferencia'
-                        }
-                        else {
+                        } else {
                             let promoCode = generatePromoCode(winningPrize.code);
                             resultDiv.innerText = `¡Ganaste: ${winningPrize.prize}! \n Código: ${promoCode}`;
                             copyButton.classList.remove("d-none");
                             copyButton.setAttribute("data-code", promoCode);
                         } 
-                    else {
+                    } else {
                         resultDiv.innerText = "Hubo un error. Intenta de nuevo.";
                     }
                 }, 3000);
