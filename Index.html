@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruleta de Premios</title>
+    <title>Ruleta de MALDITOCUPIDO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Permanent+Marker&family=Prosto+One&display=swap" rel="stylesheet">
@@ -76,7 +76,7 @@
 </head>
 <body>
     <div class="container text-center">
-        <h3 class="my-0">LA RUEDA DE</h3>
+        <h3 class="my-0">LA RULETA DE</h3>
         <img src="Logo_MC.png" alt="logo" class="img-fluid mb-3" style="max-width: 400px;">
         <div class="wheel-container position-relative">
             <div class="pointer"></div>
@@ -116,9 +116,9 @@
             const prizes = [
                 { min: 330, max: 30, prize: "20% Off", code: "20-VE" },
                 { min: 30, max: 90, prize: "Regalo especial", code: "RE-ES" },
-                { min: 90, max: 150, prize: "10% Off", code: "10-DI" },
+                { min: 90, max: 150, prize: "15% Off", code: "15-QU" },
                 { min: 150, max: 210, prize: "30% Off", code: "30-TR" },
-                { min: 210, max: 270, prize: "5% Off", code: "05-CI" },
+                { min: 210, max: 270, prize: "Segui", code: "05-CI" },
                 { min: 270, max: 330, prize: "50% Off", code: "50-CI" }
             ];
 
@@ -175,13 +175,16 @@
                             : finalAngle >= p.min || finalAngle < p.max;
                     });
                     if (winningPrize) {
-                        let promoCode = generatePromoCode(winningPrize.code);
-                        resultDiv.innerText = `¡Ganaste: ${winningPrize.prize}! \n Código: ${promoCode}`;
-                        // Muestra el botón de copiar y genera el QR
-                        copyButton.classList.remove("d-none");
-                        copyButton.setAttribute("data-code", promoCode);
-  
-                    } else {
+                        if (winningPrize.prize == "Segui") {
+                            resultDiv.innerHTML = 'En esta oportunidad no ganaste. <br> Podés ingresar a nuestra <a href="https://www.malditocupido.com.ar/" target="_blank">tienda online</a> y elegir tus prendas favoritas con un 10% off, si abonás con transferencia'
+                        }
+                        else {
+                            let promoCode = generatePromoCode(winningPrize.code);
+                            resultDiv.innerText = `¡Ganaste: ${winningPrize.prize}! \n Código: ${promoCode}`;
+                            copyButton.classList.remove("d-none");
+                            copyButton.setAttribute("data-code", promoCode);
+                        } 
+                    else {
                         resultDiv.innerText = "Hubo un error. Intenta de nuevo.";
                     }
                 }, 3000);
