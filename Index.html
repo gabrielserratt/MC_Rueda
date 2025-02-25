@@ -141,7 +141,7 @@
             let spinResult = canSpin();
 
             if (!spinResult.canSpin) {
-                spinButton.disabled = true;
+                spinButton.style.display = "none";  // Oculta el botón si ya giró
                 resultDiv.innerText = `Ya giraste esta semana. Vuelve a intentarlo en ${spinResult.daysRemaining} día${spinResult.daysRemaining > 1 ? 's' : ''}.`;
             } else {
                 localStorage.setItem("lastSpinDate", new Date().toISOString());
@@ -165,7 +165,8 @@
                 }
                 let rotationFinal = 3600 + randomRotation
                 wheel.style.transform = `rotate(${rotationFinal}deg)`;
-                spinButton.disabled = true;
+                spinButton.style.display = "none";  // Oculta el botón después de girar
+
 
                 setTimeout(() => {
                     let finalAngle = (randomRotation + 90) % 360;
