@@ -143,6 +143,18 @@
             if (!spinResult.canSpin) {
                 spinButton.style.display = "none";  // Oculta el botón si ya giró
                 resultDiv.innerText = `Ya giraste esta semana. Vuelve a intentarlo en ${spinResult.daysRemaining} día${spinResult.daysRemaining > 1 ? 's' : ''}.`;
+
+                // Verificar si hay datos guardados en localStorage
+                let savedPromoCode = localStorage.getItem("promoCode");
+                let savedPromoPrize = localStorage.getItem("promoPrize");
+
+                if (savedPromoCode && savedPromoPrize) {
+                    // Agregar el premio y código debajo del mensaje
+                    resultDiv.innerHTML += `<br><br>¡Tu premio fue: ${savedPromoPrize}! <br> Código: ${savedPromoCode}`;
+                    copyButton.classList.remove("d-none");
+                    copyButton.setAttribute("data-code", savedPromoCode);
+                }
+            
             } else {
                 localStorage.setItem("lastSpinDate", new Date().toISOString());
             }
@@ -180,6 +192,11 @@
                             resultDiv.innerHTML = 'En esta oportunidad no ganaste. <br> Podés ingresar a nuestra <a href="https://www.malditocupido.com.ar/" target="_blank">tienda online</a> y elegir tus prendas favoritas con un 10% off, si abonás con transferencia'
                         } else {
                             let promoCode = generatePromoCode(winningPrize.code);
+
+                            // Guardar premio y código en localStorage
+                            localStorage.setItem("promoCode", promoCode);
+                            localStorage.setItem("promoPrize", winningPrize.prize);
+                            
                             resultDiv.innerText = `¡Ganaste: ${winningPrize.prize}! \n Código: ${promoCode}`;
                             copyButton.classList.remove("d-none");
                             copyButton.setAttribute("data-code", promoCode);
